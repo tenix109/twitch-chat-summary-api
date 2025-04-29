@@ -72,7 +72,8 @@ It includes a built-in Pomodoro timer system to support focused work sessions an
 | GET    | /status               | Check if a Pomodoro timer is active and view time remaining |
 | GET    | /clear                | Manually clear the chat log without saving |
 | GET    | /play                 | Play the most recent summary audio file |
-
+| GET    | /history              | Returns a list of previous summary sessions (`session-logs`).
+| GET    | /history/<timestamp>  | Returns a specific saved summary by timestamp.
 ---
 
 ## Pomodoro Workflow
@@ -109,22 +110,6 @@ session-logs/
       ├── chat_log.txt
       ├── summary.txt
       └── summary.mp3
-
----
-
-## Project Structure
-
-```
-twitch-chat-summary-api/
-├── app.py              # Flask server logic
-├── utils.py            # Utility functions (SafeDict)
-├── pomodoro.py         # PomodoroTimer logic
-├── settings_example.py # Example user settings
-├── requirements.txt    # Python dependencies
-├── session-logs/       # Archived session data
-├── .gitignore          # Git ignore rules
-├── README.md           # Project documentation
-```
 
 ---
 

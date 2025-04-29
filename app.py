@@ -221,6 +221,31 @@ def clear_chat():
     chat_log.clear()
     return jsonify({'message': 'Chat log cleared.'})
 
+@app.route('/history')
+def list_history():
+    log_dir = "session-logs"
+    if not os.path.exists(log_dir):
+        return jsonify([])
+
+    sessions = []
+    for name in sorted(os.listdir(log_dir), reverse=True):
+        summary_path = os.path.join(log_dir, name, "summary.txt")
+        if os.path.isfile(summary_path):
+            sessions.append({
+                "timestamp": name,
+                "path": f"/history/{name}"
+            })
+
+    return jsonify(sessions)
+
+@app.route('/history/<timestamp>')
+def get_past_summary(timestamp):
+    summary_path = os.path.join("session-logs", timestamp, "summary.txt")
+    if os.path.isfile(summary_path):
+        with open(summary_path, "r") as f:
+            return jsonify({"summary": f.read()})
+    return jsonify({"summary": "Summary not found."}), 404
+
 # ---------------------------
 # Run Everything
 # ---------------------------
