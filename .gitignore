@@ -1,0 +1,15 @@
+# Personal config
+settings.py
+
+# Runtime generated stuff
+/session-logs/
+/summary.mp3
+*.mp3
+/latest_summary.txt
+
+# Python cache
+/__pycache__/
+/venv/
+
+# MacOS junk
+.DS_Store
