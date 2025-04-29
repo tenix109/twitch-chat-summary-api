@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, send_file, request
+from flask_cors import CORS
 import threading
 import shutil
 import time
@@ -31,6 +32,7 @@ def timer_monitor():
 # Flask App Setup
 # ---------------------------
 app = Flask(__name__)
+CORS(app)
 chat_log = []
 
 class TwitchChatBot(commands.Bot):
@@ -97,7 +99,8 @@ def status():
         minutes_left = int(pomodoro_timer.time_left() // 60)
         seconds_left = int(pomodoro_timer.time_left() % 60)
         mode = pomodoro_timer.mode
-        return jsonify({'status': 'active', 'mode': f'{mode}', 'time_left': f'{minutes_left}m {seconds_left}s'})
+        return jsonify({'status': 'active', 'mode': f'{mode}', 'time_left': f'{minutes_left:02}:{seconds_left:02}'
+})
     else:
         return jsonify({'status': 'inactive'})
 
