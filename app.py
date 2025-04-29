@@ -121,7 +121,13 @@ def end_pomodoro():
 @app.route('/summary')
 def get_summary():
     if not chat_log:
-        return jsonify({'summary': 'No chat to summarize yet.'})
+        # Fallback to latest_summary if it exists
+        if os.path.exists("latest_summary.txt"):
+            with open("latest_summary.txt", "r") as f:
+                summary = f.read()
+            return jsonify({'summary': summary})
+        else:
+            return jsonify({'summary': 'No chat to summarize yet, and no previous summary available.'})
     
     chat_text = "\n".join(chat_log[-100:])
     prompt = PROMPT_TEMPLATE.format_map(SafeDict({
@@ -166,13 +172,43 @@ def finalize_summary():
     if not os.path.exists("latest_summary.txt"):
         return jsonify({'message': 'No summary available to finalize.'}), 404
 
-    with open("latest_summary.txt", "r") as f:
-        summary = f.read()
+    if chat_log:
+        # Only if chat exists, regenerate summary and save
+        chat_text = "\n".join(chat_log[-100:])
+        prompt = PROMPT_TEMPLATE.format_map(SafeDict({
+            "twitch_channel": TWITCH_CHANNEL,
+            "chat_text": chat_text,
+        }))
 
-    asyncio.run(speak_summary(summary))
-    save_session(chat_log, summary)
-    chat_log.clear()
-    return jsonify({'message': f'Summary spoken and session saved.\n{summary}'})
+        try:
+            result = subprocess.run(
+                ['ollama', 'run', SUMMARIZER_MODEL],
+                input=prompt,
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            summary = result.stdout.strip()
+            if not summary:
+                summary = "(No response from Ollama)"
+        except Exception as e:
+            summary = f"Error during summarization: {e}"
+
+        with open("latest_summary.txt", "w") as f:
+            f.write(summary)
+
+        asyncio.run(speak_summary(summary))
+        save_session(chat_log, summary)
+        chat_log.clear()
+
+        return jsonify({'message': 'New summary generated, spoken, and session saved.'})
+
+    else:
+        # No new chat, just reuse previous summary
+        with open("latest_summary.txt", "r") as f:
+            summary = f.read()
+        asyncio.run(speak_summary(summary))
+        return jsonify({'message': 'No new chat. Reusing latest summary.\n' + summary})
 
 @app.route('/play')
 def play_audio():
