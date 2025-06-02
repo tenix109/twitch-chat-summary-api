@@ -17,6 +17,9 @@ TTS_VOICE = "en-US-GuyNeural"  # Customize your Edge TTS voice here
 DEFAULT_WORK_MINUTES = 25
 DEFAULT_BREAK_MINUTES = 5
 
+# used to exclude users such as bot accounts
+EXCLUDED_USERS = []
+
 # Prompt Template - this takes a bit of prompt engineering for these local LLMs
 PROMPT_TEMPLATE = (
     "You're summarizing Twitch chat for me, the streamer. "

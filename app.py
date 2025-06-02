@@ -9,6 +9,7 @@ import subprocess
 import edge_tts
 from datetime import datetime
 import os
+import re
 from settings import *
 from pomodoro import PomodoroTimer
 from utils import SafeDict
@@ -45,6 +46,8 @@ class TwitchChatBot(commands.Bot):
     async def event_message(self, message):
         if message.echo:
             return
+        if message.author.name.lower() in EXCLUDED_USERS:
+            return
         chat_log.append(f"{message.author.name}: {message.content}")
 
 def start_bot():
@@ -54,9 +57,12 @@ def start_bot():
     loop.run_until_complete(bot.run())
 
 async def speak_summary(text):
-    cleaned = text.replace("- ", "• ").replace("\n", "\n\n")
-    communicate = edge_tts.Communicate(cleaned, voice=TTS_VOICE)
+    cleaned_text = clean_text_for_tts(text)
+    cleaned_text = cleaned_text.replace("- ", "• ").replace("\n", "\n\n")
+    communicate = edge_tts.Communicate(cleaned_text, voice=TTS_VOICE)
     await communicate.save("summary.mp3")
+
+
 
 def save_session(chat_log, summary_text):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
@@ -71,6 +77,11 @@ def save_session(chat_log, summary_text):
 
     if os.path.exists("summary.mp3"):
         shutil.copy("summary.mp3", f"{session_dir}/summary.mp3")
+
+def clean_text_for_tts(text):
+    text = text.replace("\\_", "_")
+    text = text.replace("_", " ")
+    return text
 
 # ---------------------------
 # Flask Routes

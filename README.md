@@ -31,7 +31,7 @@ It includes a built-in Pomodoro timer system to support focused work sessions an
 
 1. Clone the repository:
     ```bash
-   git clone https://github.com/aaron1127dev/twitch-chat-summary-api.git
+   git clone https://github.com/tenix109/twitch-chat-summary-api.git
    cd twitch-chat-summary-api
    ```
 
@@ -42,8 +42,10 @@ It includes a built-in Pomodoro timer system to support focused work sessions an
    venv\Scripts\activate.bat   # Windows
     ```
 3. Install required packages:
+   ```bash
    pip install -r requirements.txt
-
+   ```
+aaro
 4. Configure your settings:
    - Copy `settings_example.py` to `settings.py`
    - Fill in the required fields:
@@ -54,10 +56,13 @@ It includes a built-in Pomodoro timer system to support focused work sessions an
      - `TTS_VOICE`
      - `DEFAULT_WORK_MINUTES`
      - `DEFAULT_BREAK_MINUTES`
+     - `EXCLUDED_USERS`
      - `PROMPT_TEMPLATE`
 
 5. Run the server:
+   ```bash
    python app.py
+   ```
 
 ---
 
@@ -87,7 +92,7 @@ It includes a built-in Pomodoro timer system to support focused work sessions an
 
 3. When the timer completes:
    - The system automatically summarizes, speaks, saves the session, and clears the chat log.
-
+folder
 4. Start a break session:
    GET /start_pomodoro?mode=break
 
@@ -105,11 +110,13 @@ When a session is finalized, a folder is created under `session-logs/` containin
 
 Example folder structure:
 
+```
 session-logs/
  └── 2025-04-27_00-44/
       ├── chat_log.txt
       ├── summary.txt
       └── summary.mp3
+```
 
 ---
 
